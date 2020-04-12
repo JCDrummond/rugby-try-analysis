@@ -1,0 +1,68 @@
+---
+title: "Rugby-try-analysis"
+author: "Josh Drummond"
+date: "11/04/2020"
+output:
+  prettydoc::html_pretty:
+    theme: leonids
+    highlight: github
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Overview 
+
+This activity provides you with the opportunity to practice and work through a reproducible data analysis project. In this activity we will be exploring rugby try scoring data.
+
+## Load required packages
+
+```{r packages, message=FALSE}
+library(tidyverse) # include all required packages at the start
+```
+
+## Data source
+
+The data set used in this activity has been saved in the 2017_super-rugby_try-source-data.csv file.
+
+## Read data
+
+Read in the `batting.csv` file using the `read_csv()` function from the `readr` package. 
+
+```{r read_data, message=FALSE} 
+# read in the data
+# data dir should be in the working dir
+df <- read_csv("2017_super-rugby_try-source-data.csv")
+```
+
+## Checking the data
+
+Check the structure of the data file using `str()`:
+
+```{r structure}
+str(df)
+```
+
+Check the first 6 rows of the data file using `head()`
+
+```{r head}
+head(df)
+```
+
+Check the last 6 rows of the data file using `tail()`
+
+```{r tail}
+tail(df)
+```
+
+### Graph Analysis
+
+This graph shows the attacking team and how often across the season they were recorded as the attacking team. 
+
+``` {r attacking}
+
+ggplot(data = df) +
+  geom_bar(mapping = aes(x = attacking_team), stat = "count")
+
+```

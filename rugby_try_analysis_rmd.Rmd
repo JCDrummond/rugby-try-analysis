@@ -2,29 +2,150 @@
 title: "Rugby-try-analysis"
 author: "Josh Drummond"
 date: "11/04/2020"
-output: html_document
+output:
+  prettydoc::html_pretty:
+    theme: leonids
+    highlight: github
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+## Overview 
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+This activity provides you with the opportunity to practice and work through a reproducible data analysis project. In this activity we will be exploring rugby try scoring data.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+## Load required packages
 
-```{r cars}
-summary(cars)
+```{r packages, message=FALSE}
+library(tidyverse) # include all required packages at the start
 ```
 
-## Including Plots
+## Data source
 
-You can also embed plots, for example:
+The data set used in this activity has been saved in the 2017_super-rugby_try-source-data.csv file.
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+## Read data
+
+Read in the `batting.csv` file using the `read_csv()` function from the `readr` package. 
+
+```{r read_data, message=FALSE} 
+# read in the data
+# data dir should be in the working dir
+df <- read_csv("2017_super-rugby_try-source-data.csv")
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+## Checking the data
+
+Check the structure of the data file using `str()`:
+
+```{r structure}
+str(df)
+```
+
+Check the first 6 rows of the data file using `head()`
+
+```{r head}
+head(df)
+```
+
+Check the last 6 rows of the data file using `tail()`
+
+```{r tail}
+tail(df)
+```
+
+### Graph Analysis
+## Attacking v Defending counts
+These two barplot graph first shows the attacking team and how often across the season they were recorded as the attacking team and secondly the defensive team recordings, which gives some basic evidence to game styles that each team may have in terms of an attacking gamestyle vs defensive gamestyle
+
+``` {r attacking}
+
+ggplot(data = df) +
+  geom_bar(mapping = aes(x = attacking_team), stat = "count", colour = "black", fill = "white") + theme(axis.text.x = element_text(angle = 60, hjust = 1))
+
+ggplot(data = df) +
+  geom_bar(mapping = aes(x = defending_team), stat = "count", colour = "black", fill = "white") + theme(axis.text.x = element_text(angle = 60, hjust = 1))
+```
+
+## Recording phases
+
+In the graph below we see that the majority of try's scored came from a scoring play in the first phase, meaning that if a team turned the ball over directly, it is increasingly more likely that a team will score, and score quickly. 
+
+
+``` {r phases}
+ggplot(data = df) +
+geom_histogram(mapping = aes(x = phases), colour = "black", fill = "dodgerblue", binwidth = 1)
+```
+
+## Time from Source
+
+In this frequency polygraph, the binwidth is in 5 minute intervals and gives a very obvious relationship between the idea that maintaining possesion from the original source is not linked to scoring, slow play style in Rugby Union doesn't reflect a heavy scoring pattern. 
+
+``` {r time_from_source}
+ggplot(data = df) +
+geom_freqpoly(mapping = aes(x = time_from_source), colour = "indianred1", binwidth = 5)
+```
+
+## Final Source 
+The two scatterplots are just to give a basic indication of how many passes are associated with each final source and try source with the colours representing each individual team, so the viewer can identify the different team plays. 
+
+``` {r Pass_source_scatter}
+ggplot(data = df) + 
+geom_point(mapping = aes(x = total_passes, y = final_source, colour = attacking_team))
+
+ggplot(data = df) + 
+geom_point(mapping = aes(x = total_passes, y = try_source, colour = attacking_team))
+```
+
+## Attacking and defensive statistics
+
+Just a basic graph to show which teams are ranked where on the attacking and defensive ends. 
+
+``` {r attacking_defending_stats}
+ggplot(data = df) + 
+geom_point(mapping = aes(x = attacking_team, y = attacking_rank), arrange(df, attacking_team, attacking_rank)) + theme(axis.text.x = element_text(angle = 60, hjust = 1)) 
+
+ggplot(data = df) + 
+geom_point(mapping = aes(x = defending_team, y = defending_rank)) + theme(axis.text.x = element_text(angle = 60, hjust = 1)) + theme(axis.text.x = element_text(angle = 60, hjust = 1))
+```
+
+## Offloads and Total passes relationship
+
+In this scatterplot, we can identify a small positive linear relationship between total offloads and the total amount of passes in a try scoring play
+
+``` {r offloads-total_passes}
+ggplot(data = df) + 
+geom_point(mapping = aes(x = offloads, y = total_passes))
+```
+
+## Total passes and Try Source
+It can be a good indication of how much passing is requiring to score a try from a particular source, a penalty try for example doesn't require any.
+
+```{r pass-source}
+ggplot(data = df) + 
+geom_point(mapping = aes(x = total_passes, y = try_source))
+```
+
+## Attacking team Game Time boxplot
+```{r boxplot-attacking}
+ggplot(data = df) +
+geom_boxplot(mapping = aes(x = attacking_team, y = game_time, colour = attacking_team))
+```
+
+## Possession zone and time from source boxplot
+```{r boxplot-possession}
+ggplot(data = df) +
+geom_boxplot(mapping = aes(x = possession_zone, y = time_from_source, colour = possession_zone))
+```
+
+## Boxplot of each attacking conference
+```{r boxplot-total_passes}
+ggplot(data = df) +
+geom_boxplot(mapping = aes(x = attacking_conf, y = total_passes))
+```
+
+
+
+
